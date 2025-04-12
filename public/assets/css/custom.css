@@ -1,0 +1,251 @@
+/* Custom styles for PhotoFolio */
+
+/* Header styles */
+.header {
+    background: rgba(0, 0, 0, 0.9);
+    padding: 15px 0;
+    transition: all 0.5s;
+    z-index: 997;
+}
+
+.header .logo {
+    text-decoration: none;
+}
+
+.header .logo i {
+    font-size: 32px;
+    margin-right: 8px;
+    color: #fff;
+    line-height: 0;
+}
+
+.header .logo span {
+    font-size: 30px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: #fff;
+    font-family: var(--font-primary);
+}
+
+.header .btn-book-a-table,
+.header .btn-book-a-table:focus {
+    font-size: 14px;
+    color: #fff;
+    background: var(--color-primary);
+    padding: 8px 20px;
+    margin-left: 30px;
+    border-radius: 50px;
+    transition: 0.3s;
+}
+
+/* Navigation Menu */
+.navbar {
+    padding: 0;
+}
+
+.navbar ul {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    list-style: none;
+    align-items: center;
+}
+
+.navbar li {
+    position: relative;
+}
+
+.navbar a,
+.navbar a:focus {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0 10px 30px;
+    font-size: 15px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.6);
+    text-transform: uppercase;
+    white-space: nowrap;
+    transition: 0.3s;
+}
+
+.navbar a i,
+.navbar a:focus i {
+    font-size: 12px;
+    line-height: 0;
+    margin-left: 5px;
+}
+
+.navbar a:hover,
+.navbar .active,
+.navbar .active:focus,
+.navbar li:hover > a {
+    color: #fff;
+}
+
+.navbar .dropdown ul {
+    display: block;
+    position: absolute;
+    left: 14px;
+    top: calc(100% + 30px);
+    margin: 0;
+    padding: 10px 0;
+    z-index: 99;
+    opacity: 0;
+    visibility: hidden;
+    background: #000;
+    transition: 0.3s;
+    border-radius: 4px;
+}
+
+.navbar .dropdown ul li {
+    min-width: 200px;
+}
+
+.navbar .dropdown ul a {
+    padding: 10px 20px;
+    font-size: 15px;
+    text-transform: none;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.navbar .dropdown ul a i {
+    font-size: 12px;
+}
+
+.navbar .dropdown ul a:hover,
+.navbar .dropdown ul .active:hover,
+.navbar .dropdown ul li:hover > a {
+    color: #fff;
+}
+
+.navbar .dropdown:hover > ul {
+    opacity: 1;
+    top: 100%;
+    visibility: visible;
+}
+
+.navbar .dropdown .dropdown ul {
+    top: 0;
+    left: calc(100% - 30px);
+    visibility: hidden;
+}
+
+.navbar .dropdown .dropdown:hover > ul {
+    opacity: 1;
+    top: 0;
+    left: 100%;
+    visibility: visible;
+}
+
+/* Header Social Links */
+.header-social-links {
+    padding-right: 15px;
+}
+
+.header-social-links a {
+    color: rgba(255, 255, 255, 0.5);
+    padding-left: 15px;
+    display: inline-block;
+    line-height: 0px;
+    transition: 0.3s;
+    font-size: 16px;
+}
+
+.header-social-links a:hover {
+    color: #fff;
+}
+
+/* Mobile Navigation */
+.mobile-nav-show,
+.mobile-nav-hide {
+    font-size: 32px;
+    cursor: pointer;
+    position: fixed;
+    right: 20px;
+    top: 20px;
+    height: 44px;
+    width: 44px;
+    background: rgba(0, 0, 0, 0.8);
+    border-radius: 50%;
+    z-index: 999;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+}
+
+@media (max-width: 1279px) {
+    .navbar {
+        padding: 0;
+        z-index: 999;
+    }
+
+    .navbar ul {
+        display: none;
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 100%;
+        max-width: 400px;
+        border-left: 1px solid rgba(255, 255, 255, 0.1);
+        overflow-y: auto;
+        background: rgba(0, 0, 0, 0.9);
+        transition: 0.3s;
+        padding: 80px 0;
+        height: 100vh;
+    }
+
+    .navbar ul.active {
+        right: 0;
+    }
+
+    .navbar a,
+    .navbar a:focus {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 20px;
+        font-size: 15px;
+        font-weight: 500;
+        color: rgba(255, 255, 255, 0.7);
+    }
+
+    .navbar .dropdown ul {
+        position: static;
+        display: none;
+        opacity: 1;
+        visibility: visible;
+        background: transparent;
+        padding: 10px 0;
+    }
+
+    .navbar .dropdown > .dropdown-active,
+    .navbar .dropdown .dropdown > .dropdown-active {
+        display: block;
+    }
+
+    .mobile-nav-show {
+        display: flex;
+    }
+
+    .mobile-nav-hide {
+        display: none;
+    }
+
+    .mobile-nav-active {
+        overflow: hidden;
+    }
+
+    .mobile-nav-active .navbar {
+        right: 0;
+    }
+
+    .mobile-nav-active .navbar:before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.6);
+        z-index: 999;
+    }
+}
