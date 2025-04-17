@@ -1,6 +1,6 @@
-@extends('layouts.app')
+@extends('layouts.template')
 
-@section('title', 'Haz Creatives Studio - About')
+@section('title', 'Haz Creatives Studio - Contact')
 
 @push('styles')
     <link href="{{ asset('assets/vendor/typed.js/typed.css') }}" rel="stylesheet">
@@ -76,38 +76,55 @@
                     </div>
                 </div>
 
-                <form action="forms/contact.php" method="post" class="php-email-form" data-aos="fade-up"
+                <form action="{{ route('contact.store') }}" method="POST" class="php-email-form" data-aos="fade-up"
                     data-aos-delay="300">
+                    @csrf
                     <div class="row gy-4">
 
                         <div class="col-md-6">
-                            <input type="text" name="name" class="form-control" placeholder="Your Name"
-                                required="">
+                            <input type="text" name="name" class="form-control @error('name') is-invalid @enderror"
+                                placeholder="Your Name" value="{{ old('name') }}" required>
+                            @error('name')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
 
-                        <div class="col-md-6 ">
-                            <input type="email" class="form-control" name="email" placeholder="Your Email"
-                                required="">
+                        <div class="col-md-6">
+                            <input type="email" class="form-control @error('email') is-invalid @enderror" name="email"
+                                placeholder="Your Email" value="{{ old('email') }}" required>
+                            @error('email')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
 
                         <div class="col-md-12">
-                            <input type="text" class="form-control" name="subject" placeholder="Subject" required="">
+                            <input type="text" class="form-control @error('subject') is-invalid @enderror" name="subject"
+                                placeholder="Subject" value="{{ old('subject') }}" required>
+                            @error('subject')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
 
                         <div class="col-md-12">
-                            <textarea class="form-control" name="message" rows="6" placeholder="Message" required=""></textarea>
+                            <textarea class="form-control @error('message') is-invalid @enderror" name="message" rows="6"
+                                placeholder="Message" required>{{ old('message') }}</textarea>
+                            @error('message')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
 
                         <div class="col-md-12 text-center">
-                            <div class="loading">Loading</div>
-                            <div class="error-message"></div>
-                            <div class="sent-message">Your message has been sent. Thank you!</div>
-
+                            @if (session('success'))
+                                <div class="sent-message">{{ session('success') }}</div>
+                            @endif
+                            @if (session('error'))
+                                <div class="error-message">{{ session('error') }}</div>
+                            @endif
                             <button type="submit">Send Message</button>
                         </div>
 
                     </div>
-                </form><!-- End Contact Form -->
+                </form>
 
             </div>
 

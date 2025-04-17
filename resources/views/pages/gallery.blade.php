@@ -1,6 +1,6 @@
-@extends('layouts.app')
+@extends('layouts.template')
 
-@section('title', 'Haz Creatives Studio - About')
+@section('title', 'Haz Creatives Studio - Gallery')
 
 @push('styles')
     <link href="{{ asset('assets/vendor/typed.js/typed.css') }}" rel="stylesheet">
