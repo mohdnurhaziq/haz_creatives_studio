@@ -221,9 +221,16 @@
                 <i class="fas fa-images"></i>
                 <span>Gallery</span>
             </a>
-            <a href="#" class="nav-link">
+            <a href="{{ route('admin.messages.index') }}"
+                class="nav-link {{ request()->routeIs('admin.messages.*') ? 'active' : '' }}">
                 <i class="fas fa-envelope"></i>
                 <span>Messages</span>
+                @php
+                    $unreadCount = \App\Models\Message::where('is_read', false)->count();
+                @endphp
+                @if ($unreadCount > 0)
+                    <span class="badge bg-primary ms-2">{{ $unreadCount }}</span>
+                @endif
             </a>
             <a href="#" class="nav-link">
                 <i class="fas fa-cog"></i>

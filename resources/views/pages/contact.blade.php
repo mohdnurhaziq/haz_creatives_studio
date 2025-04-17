@@ -17,9 +17,7 @@
                     <div class="row d-flex justify-content-center text-center">
                         <div class="col-lg-8">
                             <h1>Contact</h1>
-                            <p class="mb-0">Odio et unde deleniti. Deserunt numquam exercitationem. Officiis quo odio sint
-                                voluptas consequatur ut a odio voluptatem. Sit dolorum debitis veritatis natus dolores.
-                                Quasi ratione sint. Sit quaerat ipsum dolorem.</p>
+                            <p class="mb-0">Get in touch with us. We'd love to hear from you!</p>
                         </div>
                     </div>
                 </div>
@@ -80,40 +78,40 @@
                     data-aos-delay="300">
                     @csrf
                     <div class="row gy-4">
-
                         <div class="col-md-6">
                             <input type="text" name="name" class="form-control @error('name') is-invalid @enderror"
                                 placeholder="Your Name" value="{{ old('name') }}" required>
                             @error('name')
-                                <div class="invalid-feedback">{{ $message }}</div>
+                                <div class="error-message">{{ $message }}</div>
                             @enderror
                         </div>
 
                         <div class="col-md-6">
-                            <input type="email" class="form-control @error('email') is-invalid @enderror" name="email"
+                            <input type="email" name="email" class="form-control @error('email') is-invalid @enderror"
                                 placeholder="Your Email" value="{{ old('email') }}" required>
                             @error('email')
-                                <div class="invalid-feedback">{{ $message }}</div>
+                                <div class="error-message">{{ $message }}</div>
                             @enderror
                         </div>
 
                         <div class="col-md-12">
-                            <input type="text" class="form-control @error('subject') is-invalid @enderror" name="subject"
+                            <input type="text" name="subject" class="form-control @error('subject') is-invalid @enderror"
                                 placeholder="Subject" value="{{ old('subject') }}" required>
                             @error('subject')
-                                <div class="invalid-feedback">{{ $message }}</div>
+                                <div class="error-message">{{ $message }}</div>
                             @enderror
                         </div>
 
                         <div class="col-md-12">
-                            <textarea class="form-control @error('message') is-invalid @enderror" name="message" rows="6"
+                            <textarea name="message" class="form-control @error('message') is-invalid @enderror" rows="6"
                                 placeholder="Message" required>{{ old('message') }}</textarea>
                             @error('message')
-                                <div class="invalid-feedback">{{ $message }}</div>
+                                <div class="error-message">{{ $message }}</div>
                             @enderror
                         </div>
 
                         <div class="col-md-12 text-center">
+                            <div class="loading">Loading</div>
                             @if (session('success'))
                                 <div class="sent-message">{{ session('success') }}</div>
                             @endif
@@ -122,13 +120,12 @@
                             @endif
                             <button type="submit">Send Message</button>
                         </div>
-
                     </div>
                 </form>
 
             </div>
 
-        </section><!-- /Contact Section -->
+        </section><!-- End Contact Section -->
 
     </main>
 
@@ -139,11 +136,20 @@
     <script src="{{ asset('assets/vendor/aos/aos.js') }}"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Initialize AOS
             AOS.init({
                 duration: 1000,
                 easing: 'ease-in-out',
                 once: true,
                 mirror: false
+            });
+
+            // Handle form submission loading state
+            const form = document.querySelector('.php-email-form');
+            const loading = form.querySelector('.loading');
+
+            form.addEventListener('submit', function() {
+                loading.style.display = 'block';
             });
         });
     </script>
