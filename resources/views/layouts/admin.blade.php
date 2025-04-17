@@ -232,6 +232,10 @@
                     <span class="badge bg-primary ms-2">{{ $unreadCount }}</span>
                 @endif
             </a>
+            <a href="{{ route('admin.purchases.index') }}" class="nav-link {{ request()->routeIs('admin.purchases.*') ? 'active' : '' }}">
+                <i class="fas fa-money-bill-wave"></i>
+                <span>Purchases</span>
+            </a>
             <a href="#" class="nav-link">
                 <i class="fas fa-cog"></i>
                 <span>Settings</span>
@@ -284,9 +288,12 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <!-- AOS -->
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         AOS.init();
     </script>
+    @stack('scripts')
 </body>
 
 </html>

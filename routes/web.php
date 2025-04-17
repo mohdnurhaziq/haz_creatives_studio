@@ -47,6 +47,10 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::patch('/messages/{message}/mark-read', [App\Http\Controllers\Admin\MessageController::class, 'markAsRead'])->name('messages.mark-read');
     Route::patch('/messages/{message}/mark-unread', [App\Http\Controllers\Admin\MessageController::class, 'markAsUnread'])->name('messages.mark-unread');
     Route::delete('/messages/{message}', [App\Http\Controllers\Admin\MessageController::class, 'destroy'])->name('messages.destroy');
+
+    // Purchases Routes
+    Route::get('/purchases/report', [App\Http\Controllers\Admin\PurchaseController::class, 'report'])->name('purchases.report');
+    Route::resource('purchases', App\Http\Controllers\Admin\PurchaseController::class);
 });
 
 require __DIR__.'/auth.php';
