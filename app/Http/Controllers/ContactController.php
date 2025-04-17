@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ContactFormRequest;
 use App\Models\Message;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\JsonResponse;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Log;
 
@@ -22,9 +23,9 @@ class ContactController extends Controller
      * Store a newly created contact form submission.
      *
      * @param  \App\Http\Requests\ContactFormRequest  $request
-     * @return \Illuminate\Http\RedirectResponse
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\JsonResponse
      */
-    public function store(ContactFormRequest $request): RedirectResponse
+    public function store(ContactFormRequest $request)
     {
         try {
             // Get validated data
@@ -41,13 +42,34 @@ class ContactController extends Controller
 
             Log::info('Contact form submitted and saved to database', $validated);
 
+            $response = [
+                'success' => true,
+                'message' => 'Thank you for your message. We will get back to you soon!'
+            ];
+
+            // Check if request is AJAX
+            if ($request->ajax()) {
+                return response()->json($response);
+            }
+
             return redirect()->route('contact')
-                ->with('success', 'Thank you for your message. We will get back to you soon!');
+                ->with('success', $response['message']);
+
         } catch (\Exception $e) {
             Log::error('Error saving contact form: ' . $e->getMessage());
 
+            $response = [
+                'success' => false,
+                'message' => 'Sorry, there was an error sending your message. Please try again later.'
+            ];
+
+            // Check if request is AJAX
+            if ($request->ajax()) {
+                return response()->json($response, 500);
+            }
+
             return redirect()->route('contact')
-                ->with('error', 'Sorry, there was an error sending your message. Please try again later.');
+                ->with('error', $response['message']);
         }
     }
 }

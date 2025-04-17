@@ -4,6 +4,25 @@
 
 @push('styles')
     <link href="{{ asset('assets/vendor/typed.js/typed.css') }}" rel="stylesheet">
+    <style>
+        .message-box {
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+            text-align: center;
+            display: none;
+        }
+
+        .success-message {
+            background: #059652;
+            color: #fff;
+        }
+
+        .error-message {
+            background: #dc3545;
+            color: #fff;
+        }
+    </style>
 @endpush
 
 @section('content')
@@ -74,8 +93,8 @@
                     </div>
                 </div>
 
-                <form action="{{ route('contact.store') }}" method="POST" class="php-email-form" data-aos="fade-up"
-                    data-aos-delay="300">
+                <form id="contactForm" action="{{ route('contact.store') }}" method="POST" class="php-email-form"
+                    data-aos="fade-up" data-aos-delay="300">
                     @csrf
                     <div class="row gy-4">
                         <div class="col-md-6">
@@ -111,14 +130,8 @@
                         </div>
 
                         <div class="col-md-12 text-center">
-                            <div class="loading">Loading</div>
-                            @if (session('success'))
-                                <div class="sent-message">{{ session('success') }}</div>
-                            @endif
-                            @if (session('error'))
-                                <div class="error-message">{{ session('error') }}</div>
-                            @endif
-                            <button type="submit">Send Message</button>
+                            <div id="formMessage" class="message-box"></div>
+                            <button type="submit" class="btn btn-primary">Send Message</button>
                         </div>
                     </div>
                 </form>
@@ -144,12 +157,51 @@
                 mirror: false
             });
 
-            // Handle form submission loading state
-            const form = document.querySelector('.php-email-form');
-            const loading = form.querySelector('.loading');
+            const form = document.getElementById('contactForm');
+            const formMessage = document.getElementById('formMessage');
+            const submitButton = form.querySelector('button[type="submit"]');
 
-            form.addEventListener('submit', function() {
-                loading.style.display = 'block';
+            function showMessage(type, text) {
+                formMessage.className = 'message-box ' + (type === 'success' ? 'success-message' : 'error-message');
+                formMessage.textContent = text;
+                formMessage.style.display = 'block';
+                formMessage.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center'
+                });
+            }
+
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                submitButton.disabled = true;
+                formMessage.style.display = 'none';
+
+                try {
+                    const response = await fetch(form.action, {
+                        method: 'POST',
+                        body: new FormData(form),
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json'
+                        }
+                    });
+
+                    const data = await response.json();
+                    submitButton.disabled = false;
+
+                    if (response.ok && data.success) {
+                        form.reset();
+                        showMessage('success', 'Thank you! Your message has been sent successfully.');
+                    } else {
+                        showMessage('error',
+                            'Sorry, there was an error sending your message. Please try again.');
+                    }
+                } catch (error) {
+                    console.error('Form submission error:', error);
+                    submitButton.disabled = false;
+                    showMessage('error',
+                        'Sorry, there was an error sending your message. Please try again.');
+                }
             });
         });
     </script>
