@@ -1,98 +1,79 @@
 @extends('layouts.admin')
 
-@section('title', 'Messages - Haz Creatives Studio')
-
-@section('header', 'Messages')
+@section('title', 'Messages')
 
 @section('content')
-    <div class="container-fluid">
-        @if (session('success'))
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                {{ session('success') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        @endif
+<div class="container-fluid px-4">
+    <h1 class="mt-4 text-white">Messages</h1>
+    
+    @if(session('success'))
+        <div class="alert alert-success bg-green-900 border border-green-700 text-green-100 px-4 py-3 rounded">
+            {{ session('success') }}
+        </div>
+    @endif
 
-        <div class="card">
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead>
-                            <tr>
-                                <th>Status</th>
-                                <th>From</th>
-                                <th>Subject</th>
-                                <th>Received</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($messages as $message)
-                                <tr class="{{ !$message->is_read ? 'table-active' : '' }}">
-                                    <td>
-                                        @if (!$message->is_read)
-                                            <span class="badge bg-primary">New</span>
-                                        @else
-                                            <span class="badge bg-secondary">Read</span>
-                                        @endif
-                                    </td>
-                                    <td>{{ $message->name }}</td>
-                                    <td>
-                                        <a href="{{ route('admin.messages.show', $message) }}" class="text-decoration-none">
-                                            {{ $message->subject }}
-                                        </a>
-                                    </td>
-                                    <td>{{ $message->formatted_created_at }}</td>
-                                    <td>
-                                        <div class="btn-group">
-                                            <a href="{{ route('admin.messages.show', $message) }}"
-                                                class="btn btn-sm btn-outline-light">
-                                                <i class="fas fa-eye"></i>
-                                            </a>
-                                            @if ($message->is_read)
-                                                <form action="{{ route('admin.messages.mark-unread', $message) }}"
-                                                    method="POST" class="d-inline">
-                                                    @csrf
-                                                    @method('PATCH')
-                                                    <button type="submit" class="btn btn-sm btn-outline-light">
-                                                        <i class="fas fa-envelope"></i>
-                                                    </button>
-                                                </form>
-                                            @else
-                                                <form action="{{ route('admin.messages.mark-read', $message) }}"
-                                                    method="POST" class="d-inline">
-                                                    @csrf
-                                                    @method('PATCH')
-                                                    <button type="submit" class="btn btn-sm btn-outline-light">
-                                                        <i class="fas fa-envelope-open"></i>
-                                                    </button>
-                                                </form>
-                                            @endif
-                                            <form action="{{ route('admin.messages.destroy', $message) }}" method="POST"
-                                                class="d-inline">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="btn btn-sm btn-outline-danger"
-                                                    onclick="return confirm('Are you sure you want to delete this message?')">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="5" class="text-center">No messages found.</td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="d-flex justify-content-center mt-4">
-                    {{ $messages->links() }}
+    <div class="card bg-gray-800 border-gray-700 mb-4 shadow-sm">
+        <div class="card-header bg-gray-800 border-gray-700">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <i class="fas fa-envelope me-1 text-gray-400"></i>
+                    <span class="text-white font-medium">All Messages</span>
                 </div>
             </div>
         </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover text-white">
+                    <thead class="bg-gray-700">
+                        <tr>
+                            <th class="text-gray-300">ID</th>
+                            <th class="text-gray-300">From</th>
+                            <th class="text-gray-300">Subject</th>
+                            <th class="text-gray-300">Status</th>
+                            <th class="text-gray-300">Date</th>
+                            <th class="text-gray-300">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($messages as $message)
+                            <tr class="hover:bg-gray-700">
+                                <td class="text-gray-300">{{ $message->id }}</td>
+                                <td class="text-gray-300">{{ $message->from }}</td>
+                                <td class="text-gray-300">{{ $message->subject }}</td>
+                                <td>
+                                    <span class="badge bg-{{ $message->read ? 'success' : 'warning' }}">
+                                        {{ $message->read ? 'Read' : 'Unread' }}
+                                    </span>
+                                </td>
+                                <td class="text-gray-300">{{ $message->created_at->format('M d, Y H:i') }}</td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a href="{{ route('admin.messages.show', $message) }}" class="btn btn-sm btn-info text-white hover:bg-blue-700">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <form action="{{ route('admin.messages.destroy', $message) }}" method="POST" class="d-inline">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-sm btn-danger hover:bg-red-700" onclick="return confirm('Are you sure you want to delete this message?')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="6" class="text-center text-gray-400 py-4">No messages found.</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="d-flex justify-content-center mt-4">
+                {{ $messages->links() }}
+            </div>
+        </div>
     </div>
+</div>
 @endsection

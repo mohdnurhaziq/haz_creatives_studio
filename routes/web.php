@@ -2,8 +2,13 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\Admin\MessageController;
+use App\Http\Controllers\Admin\PurchaseController;
+use App\Http\Middleware\AdminMiddleware;
 use Illuminate\Support\Facades\Route;
 
+// Public Routes
 Route::get('/', function () {
     return view('pages.home');
 })->name('home');
@@ -26,6 +31,7 @@ Route::get('/contact', function () {
 
 Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
 
+// Auth Routes
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
@@ -36,21 +42,43 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+// Test route for middleware
+Route::get('/test-admin', function () {
+    return 'Middleware working!';
+})->middleware(['auth', 'admin']);
+
+// Admin Routes
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
+    // Dashboard
     Route::get('/dashboard', function () {
-        return view('dashboard');
+        if (!auth()->user()->is_admin) {
+            abort(403, 'Unauthorized access. Admin privileges required.');
+        }
+        return view('admin.dashboard');
     })->name('dashboard');
 
-    // Messages Routes
-    Route::get('/messages', [App\Http\Controllers\Admin\MessageController::class, 'index'])->name('messages.index');
-    Route::get('/messages/{message}', [App\Http\Controllers\Admin\MessageController::class, 'show'])->name('messages.show');
-    Route::patch('/messages/{message}/mark-read', [App\Http\Controllers\Admin\MessageController::class, 'markAsRead'])->name('messages.mark-read');
-    Route::patch('/messages/{message}/mark-unread', [App\Http\Controllers\Admin\MessageController::class, 'markAsUnread'])->name('messages.mark-unread');
-    Route::delete('/messages/{message}', [App\Http\Controllers\Admin\MessageController::class, 'destroy'])->name('messages.destroy');
+    // Messages
+    Route::get('/messages', [MessageController::class, 'index'])->name('messages.index');
+    Route::get('/messages/{message}', [MessageController::class, 'show'])->name('messages.show');
+    Route::patch('/messages/{message}/mark-read', [MessageController::class, 'markAsRead'])->name('messages.mark-read');
+    Route::patch('/messages/{message}/mark-unread', [MessageController::class, 'markAsUnread'])->name('messages.mark-unread');
+    Route::delete('/messages/{message}', [MessageController::class, 'destroy'])->name('messages.destroy');
 
-    // Purchases Routes
-    Route::get('/purchases/report', [App\Http\Controllers\Admin\PurchaseController::class, 'report'])->name('purchases.report');
-    Route::resource('purchases', App\Http\Controllers\Admin\PurchaseController::class);
+    // Purchases
+    Route::get('/purchases/report', [PurchaseController::class, 'report'])->name('purchases.report');
+    Route::resource('purchases', PurchaseController::class)->names([
+        'index' => 'purchases.index',
+        'show' => 'purchases.show',
+        'create' => 'purchases.create',
+        'store' => 'purchases.store',
+        'edit' => 'purchases.edit',
+        'update' => 'purchases.update',
+        'destroy' => 'purchases.destroy',
+    ]);
+
+    // Settings
+    Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
+    Route::post('/settings', [SettingController::class, 'update'])->name('settings.update');
 });
 
 require __DIR__.'/auth.php';

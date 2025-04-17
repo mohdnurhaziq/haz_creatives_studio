@@ -10,41 +10,82 @@ class Purchase extends Model
 {
     use HasFactory, SoftDeletes;
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
     protected $fillable = [
-        'item_name',
-        'description',
-        'amount',
-        'type',
+        'product_id',
+        'supplier_id',
+        'quantity',
+        'unit_price',
+        'total_price',
         'purchase_date',
-        'invoice_number',
-        'supplier',
-        'assigned_to',
         'status',
-        'notes'
     ];
 
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
     protected $casts = [
-        'purchase_date' => 'date',
-        'amount' => 'decimal:2'
+        'purchase_date' => 'datetime',
+        'unit_price' => 'decimal:2',
+        'total_price' => 'decimal:2',
     ];
+
+    /**
+     * Get the product that owns the purchase.
+     */
+    public function product()
+    {
+        return $this->belongsTo(Product::class);
+    }
+
+    /**
+     * Get the supplier that owns the purchase.
+     */
+    public function supplier()
+    {
+        return $this->belongsTo(Supplier::class);
+    }
 
     public function assignedUser()
     {
         return $this->belongsTo(User::class, 'assigned_to');
     }
 
-    public function scopeIncome($query)
+    /**
+     * Scope a query to only include pending purchases.
+     */
+    public function scopePending($query)
     {
-        return $query->where('type', 'income');
+        return $query->where('status', 'pending');
     }
 
-    public function scopeExpense($query)
+    /**
+     * Scope a query to only include completed purchases.
+     */
+    public function scopeCompleted($query)
     {
-        return $query->where('type', 'expense');
+        return $query->where('status', 'completed');
     }
 
-    public function getFormattedAmountAttribute()
+    /**
+     * Scope a query to only include cancelled purchases.
+     */
+    public function scopeCancelled($query)
     {
-        return 'RM ' . number_format($this->amount, 2);
+        return $query->where('status', 'cancelled');
+    }
+
+    /**
+     * Get the formatted total price.
+     */
+    public function getFormattedTotalPriceAttribute()
+    {
+        return '$' . number_format($this->total_price, 2);
     }
 } 

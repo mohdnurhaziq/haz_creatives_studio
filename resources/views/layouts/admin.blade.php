@@ -236,7 +236,7 @@
                 <i class="fas fa-money-bill-wave"></i>
                 <span>Purchases</span>
             </a>
-            <a href="#" class="nav-link">
+            <a href="{{ route('admin.settings.index') }}" class="nav-link {{ request()->routeIs('admin.settings.*') ? 'active' : '' }}">
                 <i class="fas fa-cog"></i>
                 <span>Settings</span>
             </a>

@@ -19,6 +19,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // Register admin routes
+        $this->app->bind('App\Http\Controllers\Admin\SettingController');
+        $this->app->bind('App\Http\Controllers\Admin\MessageController');
+        $this->app->bind('App\Http\Controllers\Admin\PurchaseController');
     }
 }

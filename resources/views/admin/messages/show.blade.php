@@ -1,80 +1,69 @@
 @extends('layouts.admin')
 
-@section('title', 'View Message - Haz Creatives Studio')
-
-@section('header', 'View Message')
+@section('title', 'View Message')
 
 @section('content')
-    <div class="container-fluid">
-        <div class="mb-4">
-            <a href="{{ route('admin.messages.index') }}" class="btn btn-outline-light">
-                <i class="fas fa-arrow-left me-2"></i>Back to Messages
-            </a>
+<div class="container-fluid px-4">
+    <h1 class="mt-4 text-white">View Message</h1>
+    
+    @if(session('success'))
+        <div class="alert alert-success bg-green-900 border border-green-700 text-green-100 px-4 py-3 rounded">
+            {{ session('success') }}
         </div>
+    @endif
 
-        <div class="card">
-            <div class="card-header">
-                <div class="d-flex justify-content-between align-items-center">
-                    <h5 class="card-title mb-0 text-white">{{ $message->subject }}</h5>
-                    <div class="btn-group">
-                        @if ($message->is_read)
-                            <form action="{{ route('admin.messages.mark-unread', $message) }}" method="POST"
-                                class="d-inline">
-                                @csrf
-                                @method('PATCH')
-                                <button type="submit" class="btn btn-outline-light">
-                                    <i class="fas fa-envelope me-2"></i>Mark as Unread
-                                </button>
-                            </form>
-                        @else
-                            <form action="{{ route('admin.messages.mark-read', $message) }}" method="POST"
-                                class="d-inline">
-                                @csrf
-                                @method('PATCH')
-                                <button type="submit" class="btn btn-outline-light">
-                                    <i class="fas fa-envelope-open me-2"></i>Mark as Read
-                                </button>
-                            </form>
-                        @endif
-                        <form action="{{ route('admin.messages.destroy', $message) }}" method="POST" class="d-inline ms-2">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-outline-danger"
-                                onclick="return confirm('Are you sure you want to delete this message?')">
-                                <i class="fas fa-trash me-2"></i>Delete
-                            </button>
-                        </form>
-                    </div>
+    <div class="card bg-gray-800 border-gray-700 mb-4 shadow-sm">
+        <div class="card-header bg-gray-800 border-gray-700">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <i class="fas fa-envelope me-1 text-gray-400"></i>
+                    <span class="text-white font-medium">Message Details</span>
                 </div>
-            </div>
-            <div class="card-body">
-                <div class="row mb-4">
-                    <div class="col-md-6">
-                        <h6 class="text-secondary mb-2">From</h6>
-                        <p class="text-white mb-0">
-                            {{ $message->name }}
-                            <span class="text-secondary">&lt;{{ $message->email }}&gt;</span>
-                        </p>
-                    </div>
-                    <div class="col-md-6 text-md-end">
-                        <h6 class="text-secondary mb-2">Received</h6>
-                        <p class="text-white mb-0">{{ $message->created_at->format('F j, Y g:i A') }}</p>
-                    </div>
-                </div>
-
-                <div class="message-content">
-                    <h6 class="text-secondary mb-2">Message</h6>
-                    <div class="p-4 rounded bg-dark border border-secondary">
-                        <p class="text-white mb-0" style="white-space: pre-wrap;">{{ $message->message }}</p>
-                    </div>
-                </div>
-
-                <div class="mt-4">
-                    <a href="mailto:{{ $message->email }}" class="btn btn-outline-light">
-                        <i class="fas fa-reply me-2"></i>Reply via Email
+                <div>
+                    <a href="{{ route('admin.messages.index') }}" class="btn btn-secondary bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded">
+                        <i class="fas fa-arrow-left me-1"></i> Back to Messages
                     </a>
                 </div>
             </div>
         </div>
+        <div class="card-body">
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label text-gray-300">From:</label>
+                        <p class="text-white">{{ $message->from }}</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label text-gray-300">Date:</label>
+                        <p class="text-white">{{ $message->created_at->format('M d, Y H:i') }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label text-gray-300">Subject:</label>
+                <p class="text-white">{{ $message->subject }}</p>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label text-gray-300">Message:</label>
+                <div class="bg-gray-700 p-4 rounded text-white">
+                    {{ $message->message }}
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-end">
+                <form action="{{ route('admin.messages.destroy', $message) }}" method="POST" class="d-inline">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-danger hover:bg-red-700 text-white font-medium py-2 px-4 rounded" onclick="return confirm('Are you sure you want to delete this message?')">
+                        <i class="fas fa-trash me-1"></i> Delete Message
+                    </button>
+                </form>
+            </div>
+        </div>
     </div>
+</div>
 @endsection

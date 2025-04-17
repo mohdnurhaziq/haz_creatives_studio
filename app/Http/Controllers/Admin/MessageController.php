@@ -7,9 +7,21 @@ use App\Models\Message;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Routing\Controller as BaseController;
+use Illuminate\Support\Facades\Auth;
 
-class MessageController extends Controller
+class MessageController extends BaseController
 {
+    public function __construct()
+    {
+        $this->middleware(function ($request, $next) {
+            if (!Auth::check() || !Auth::user()->is_admin) {
+                abort(403, 'Unauthorized access. Admin privileges required.');
+            }
+            return $next($request);
+        });
+    }
+
     /**
      * Display a listing of the messages.
      */
@@ -38,9 +50,9 @@ class MessageController extends Controller
      */
     public function markAsRead(Message $message): RedirectResponse
     {
-        $message->markAsRead();
-
-        return back()->with('success', 'Message marked as read');
+        $message->update(['read_at' => now()]);
+        return redirect()->route('admin.messages.show', $message)
+            ->with('success', 'Message marked as read.');
     }
 
     /**
@@ -48,9 +60,9 @@ class MessageController extends Controller
      */
     public function markAsUnread(Message $message): RedirectResponse
     {
-        $message->markAsUnread();
-
-        return back()->with('success', 'Message marked as unread');
+        $message->update(['read_at' => null]);
+        return redirect()->route('admin.messages.show', $message)
+            ->with('success', 'Message marked as unread.');
     }
 
     /**
@@ -61,6 +73,6 @@ class MessageController extends Controller
         $message->delete();
 
         return redirect()->route('admin.messages.index')
-            ->with('success', 'Message deleted successfully');
+            ->with('success', 'Message deleted successfully.');
     }
 }
