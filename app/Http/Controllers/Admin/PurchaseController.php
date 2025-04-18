@@ -135,9 +135,11 @@ class PurchaseController extends BaseController
      */
     public function edit(Purchase $purchase)
     {
-        $products = Product::all();
-        $suppliers = Supplier::all();
-        return view('admin.purchases.edit', compact('purchase', 'products', 'suppliers'));
+        $categories = Category::pluck('name')->toArray();
+        $brandModels = Product::distinct()->pluck('brand_model')->filter()->toArray();
+        $suppliers = Supplier::pluck('name')->toArray();
+
+        return view('admin.purchases.edit', compact('purchase', 'categories', 'brandModels', 'suppliers'));
     }
 
     /**
