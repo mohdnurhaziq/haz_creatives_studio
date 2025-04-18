@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\MessageController;
 use App\Http\Controllers\Admin\PurchaseController;
 use App\Http\Middleware\AdminMiddleware;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 
 // Public Routes
 Route::get('/', function () {
@@ -32,8 +33,8 @@ Route::get('/contact', function () {
 Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
 
 // Auth Routes
-Route::get('/dashboard', function () {
-    return view('dashboard');
+Route::get('/admin/dashboard', function () {
+    return view('admin.dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
@@ -50,8 +51,8 @@ Route::get('/test-admin', function () {
 // Admin Routes
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
     // Dashboard
-    Route::get('/dashboard', function () {
-        if (!auth()->user()->is_admin) {
+    Route::get('/admin/dashboard', function () {
+        if (!Auth::user()->is_admin) {
             abort(403, 'Unauthorized access. Admin privileges required.');
         }
         return view('admin.dashboard');
