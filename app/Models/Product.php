@@ -16,12 +16,20 @@ class Product extends Model
      */
     protected $fillable = [
         'name',
-        'description',
         'price',
-        'stock_quantity',
         'sku',
         'category',
-        'status',
+        'brand_model',
+        'serial_number'
+    ];
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'price' => 'decimal:2',
     ];
 
     /**
@@ -31,4 +39,33 @@ class Product extends Model
     {
         return $this->hasMany(Purchase::class);
     }
-} 
+
+    /**
+     * Boot the model.
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($product) {
+            if (empty($product->sku)) {
+                $product->sku = self::generateSku($product->name);
+            }
+        });
+    }
+
+    /**
+     * Generate a unique SKU based on product name.
+     *
+     * @param string $name
+     * @return string
+     */
+    private static function generateSku(string $name): string
+    {
+        $prefix = strtoupper(substr(preg_replace('/[^A-Za-z0-9]/', '', $name), 0, 3));
+        $timestamp = time();
+        $random = strtoupper(substr(uniqid(), -4));
+
+        return $prefix . '-' . $timestamp . $random;
+    }
+}

@@ -6,9 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Models\Purchase;
 use App\Models\Product;
 use App\Models\Supplier;
+use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class PurchaseController extends BaseController
 {
@@ -30,7 +32,7 @@ class PurchaseController extends BaseController
     public function index()
     {
         $purchases = Purchase::with(['product', 'supplier'])->latest()->paginate(10);
-        
+
         // Calculate totals
         $totalPurchases = Purchase::sum('total_price');
         $pendingPurchases = Purchase::where('status', 'pending')->sum('total_price');
@@ -53,9 +55,11 @@ class PurchaseController extends BaseController
      */
     public function create()
     {
-        $products = Product::all();
-        $suppliers = Supplier::all();
-        return view('admin.purchases.create', compact('products', 'suppliers'));
+        $categories = Category::pluck('name')->toArray();
+        $brandModels = Product::distinct()->pluck('brand_model')->filter()->toArray();
+        $suppliers = Supplier::pluck('name')->toArray();
+
+        return view('admin.purchases.create', compact('categories', 'brandModels', 'suppliers'));
     }
 
     /**
@@ -66,20 +70,61 @@ class PurchaseController extends BaseController
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'product_id' => 'required|exists:products,id',
-            'supplier_id' => 'required|exists:suppliers,id',
-            'quantity' => 'required|integer|min:1',
-            'unit_price' => 'required|numeric|min:0',
-            'total_price' => 'required|numeric|min:0',
-            'purchase_date' => 'required|date',
-            'status' => 'required|in:pending,completed,cancelled',
-        ]);
+        try {
+            // Handle category
+            $category = $request->input('category');
+            if ($request->input('category') === 'new') {
+                $category = $request->input('new_category');
+            }
 
-        Purchase::create($validated);
+            // Handle brand/model
+            $brandModel = $request->input('brand_model');
+            if ($request->input('brand_model') === 'new') {
+                $brandModel = $request->input('new_brand_model');
+            }
 
-        return redirect()->route('admin.purchases.index')
-            ->with('success', 'Purchase created successfully.');
+            // Handle supplier
+            $supplierName = $request->input('supplier_name');
+            if ($request->input('supplier_name') === 'new') {
+                $supplierName = $request->input('new_supplier');
+            }
+
+            // Create or find supplier
+            $supplier = Supplier::firstOrCreate(
+                ['name' => $supplierName]
+            );
+
+            // Create or find product
+            $product = Product::firstOrCreate(
+                ['serial_number' => $request->input('serial_number')],
+                [
+                    'name' => $request->input('product_name'),
+                    'price' => $request->input('unit_price'),
+                    'category' => $category,
+                    'brand_model' => $brandModel,
+                    'serial_number' => $request->input('serial_number')
+                ]
+            );
+
+            // Create purchase
+            $purchase = Purchase::create([
+                'product_id' => $product->id,
+                'supplier_id' => $supplier->id,
+                'quantity' => $request->input('quantity'),
+                'unit_price' => $request->input('unit_price'),
+                'total_price' => $request->input('total_price'),
+                'purchase_date' => $request->input('purchase_date'),
+                'status' => $request->input('status'),
+            ]);
+
+            return redirect()->route('admin.purchases.index')
+                ->with('success', 'Purchase created successfully.');
+        } catch (\Exception $e) {
+            Log::error('Error creating purchase: ' . $e->getMessage());
+            return redirect()->back()
+                ->with('error', 'Failed to create purchase. Please try again.')
+                ->withInput();
+        }
     }
 
     /**
@@ -148,4 +193,4 @@ class PurchaseController extends BaseController
 
         return view('admin.purchases.report', compact('purchases'));
     }
-} 
+}

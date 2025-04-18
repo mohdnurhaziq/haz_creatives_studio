@@ -5,6 +5,7 @@ use App\Http\Controllers\ContactController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\MessageController;
 use App\Http\Controllers\Admin\PurchaseController;
+use App\Http\Controllers\Admin\ProductController;
 use App\Http\Middleware\AdminMiddleware;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
@@ -57,6 +58,9 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
         }
         return view('admin.dashboard');
     })->name('dashboard');
+
+    // Products
+    Route::post('/products', [ProductController::class, 'store'])->name('products.store');
 
     // Messages
     Route::get('/messages', [MessageController::class, 'index'])->name('messages.index');
